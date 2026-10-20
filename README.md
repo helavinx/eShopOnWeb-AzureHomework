@@ -155,7 +155,7 @@ You can also run the samples in Docker (see below).
 
     The first time you run the application, it will seed both databases with data such that you should see products in the store, and you should be able to log in using the demouser@microsoft.com account.
 
-    Note: If you need to create migrations, you can use these commands:
+    Note: If you need to create migrations, you can use these commands :
 
     ```
     -- create migration (from Web folder CLI)
