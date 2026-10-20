@@ -32,6 +32,8 @@ public class CatalogItemListPagedEndpoint(
 
     public override async Task<ListPagedCatalogItemResponse> ExecuteAsync(ListPagedCatalogItemRequest request, CancellationToken ct)
     {
+        throw new Exception("Cannot move further");
+        
         await Task.Delay(1000, ct);
 
         var response = new ListPagedCatalogItemResponse(request.CorrelationId());
