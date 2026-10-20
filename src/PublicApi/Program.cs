@@ -19,9 +19,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Application Insights
 builder.Services.AddApplicationInsightsTelemetry();
 
-builder.Logging.AddApplicationInsights();
-builder.Logging.SetMinimumLevel(LogLevel.Information);
-
 // Add service defaults & Aspire components.
 builder.AddAspireServiceDefaults();
 
