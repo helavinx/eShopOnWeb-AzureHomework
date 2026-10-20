@@ -65,7 +65,7 @@ builder.AddSeqEndpoint(connectionName: "seq", options =>
 
 var app = builder.Build();
 
-throw new Exception("Cannot move further");
+// throw new Exception("Cannot move further");
 
 app.Logger.LogInformation("APPLICATION INSIGHTS TEST MESSAGE");
 
