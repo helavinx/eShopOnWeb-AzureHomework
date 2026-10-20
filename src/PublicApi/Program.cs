@@ -16,6 +16,9 @@ using NimblePros.Metronome;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Application Insights
+builder.Services.AddApplicationInsightsTelemetry();
+
 // Add service defaults & Aspire components.
 builder.AddAspireServiceDefaults();
 
