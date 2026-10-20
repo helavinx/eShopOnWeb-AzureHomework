@@ -1,4 +1,5 @@
-﻿using BlazorShared;
+using System;
+using BlazorShared;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Builder;
