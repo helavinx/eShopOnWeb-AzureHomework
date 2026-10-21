@@ -4,6 +4,7 @@ using Microsoft.eShopWeb.Infrastructure.Data;
 using Microsoft.eShopWeb.Infrastructure.Data.Queries;
 using Microsoft.eShopWeb.Infrastructure.Logging;
 using Microsoft.eShopWeb.Infrastructure.Services;
+using System.Net.Http;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
@@ -25,6 +26,8 @@ public static class ConfigureCoreServices
         services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
         services.AddTransient<IEmailSender, LoggerEmailSender>();
 
+        services.AddHttpClient();
+        
         return services;
     }
 }
