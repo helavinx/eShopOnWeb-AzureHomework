@@ -8,6 +8,9 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate.Events;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
@@ -19,16 +22,22 @@ public class OrderService : IOrderService
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IMediator _mediator;
 
-    public OrderService(IRepository<Basket> basketRepository,
+    private readonly HttpClient _httpClient;
+
+    public OrderService(
+        IRepository<Basket> basketRepository,
         IRepository<CatalogItem> itemRepository,
         IRepository<Order> orderRepository,
-        IUriComposer uriComposer, IMediator mediator)
+        IUriComposer uriComposer, 
+        IMediator mediator,
+        HttpClient httpClient)
     {
         _orderRepository = orderRepository;
         _uriComposer = uriComposer;
         _basketRepository = basketRepository;
         _itemRepository = itemRepository;
         _mediator = mediator;
+        _httpClient = httpClient;
     }
 
     public async Task CreateOrderAsync(int basketId, Address shippingAddress)
@@ -53,6 +62,28 @@ public class OrderService : IOrderService
         var order = new Order(basket.BuyerId, shippingAddress, items);
 
         await _orderRepository.AddAsync(order);
+
+        var payload = new
+        {
+            orderId = order.Id,
+            items = basket.Items.Select(i => new
+            {
+                itemId = i.CatalogItemId,
+                quantity = i.Quantity
+            })
+        };
+
+        var json = JsonSerializer.Serialize(payload);
+
+        var response = await _httpClient.PostAsync(
+            "https://orderitemsreserver-ha-hgccfyg0a5dpb3gn.westus3-01.azurewebsites.net/api/OrderItemsReserver?code=7ucgCTV9mQLPfU6_AYPdfJdfQgLevy7BEelk9Q3AdkmdAzFuMYSZtw==",
+            new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json"));
+
+        response.EnsureSuccessStatusCode();
+        
         OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(order);
         await _mediator.Publish(orderCreatedEvent);
     }
