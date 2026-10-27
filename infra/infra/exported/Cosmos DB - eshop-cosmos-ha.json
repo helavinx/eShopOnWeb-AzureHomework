@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "databaseAccounts_eshop_cosmos_ha_name": {
+            "defaultValue": "eshop-cosmos-ha",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion": "2026-04-01-preview",
+            "name": "[parameters('databaseAccounts_eshop_cosmos_ha_name')]",
+            "location": "West US 3",
+            "tags": {
+                "defaultExperience": "Core (SQL)",
+                "hidden-workload-type": "Development/Testing",
+                "hidden-cosmos-mmspecial": ""
+            },
+            "kind": "GlobalDocumentDB",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "publicNetworkAccess": "Enabled",
+                "enableAutomaticFailover": true,
+                "enableMultipleWriteLocations": false,
+                "isVirtualNetworkFilterEnabled": false,
+                "virtualNetworkRules": [],
+                "disableKeyBasedMetadataWriteAccess": false,
+                "enableFreeTier": false,
+                "enableAnalyticalStorage": false,
+                "analyticalStorageConfiguration": {
+                    "schemaType": "WellDefined"
+                },
+                "databaseAccountOfferType": "Standard",
+                "enableMaterializedViews": false,
+                "capacityMode": "Serverless",
+                "defaultIdentity": "FirstPartyIdentity",
+                "networkAclBypass": "None",
+                "disableLocalAuth": false,
+                "enablePartitionMerge": false,
+                "enablePerRegionPerPartitionAutoscale": false,
+                "enableBurstCapacity": false,
+                "enablePriorityBasedExecution": false,
+                "defaultPriorityLevel": "High",
+                "minimalTlsVersion": "Tls12",
+                "enforceHierarchicalPartitionKeyIdLastLevel": false,
+                "softDeleteConfiguration": {
+                    "softDeletionEnabled": false,
+                    "minMinutesBeforePermanentDeletionAllowed": -1,
+                    "softDeleteRetentionPeriodInMinutes": -1
+                },
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "locations": [
+                    {
+                        "locationName": "West US 3",
+                        "failoverPriority": 0,
+                        "isZoneRedundant": false
+                    }
+                ],
+                "cors": [],
+                "capabilities": [],
+                "ipRules": [],
+                "backupPolicy": {
+                    "type": "Periodic",
+                    "periodicModeProperties": {
+                        "backupIntervalInMinutes": 240,
+                        "backupRetentionIntervalInHours": 8,
+                        "backupStorageRedundancy": "Geo"
+                    }
+                },
+                "networkAclBypassResourceIds": [],
+                "diagnosticLogSettings": {
+                    "enableFullTextQuery": "None"
+                }
+            }
+        }
+    ]
+}

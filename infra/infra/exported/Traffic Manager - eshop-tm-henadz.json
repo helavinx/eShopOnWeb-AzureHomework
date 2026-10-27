@@ -1,0 +1,73 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "trafficManagerProfiles_eshop_tm_henadz_name": {
+            "defaultValue": "eshop-tm-henadz",
+            "type": "String"
+        },
+        "sites_eshop_web_henadz_externalid": {
+            "defaultValue": "/subscriptions/200b8a3b-4329-4374-85ba-2866c65f3bbe/resourceGroups/rg-eshop-homework/providers/Microsoft.Web/sites/eshop-web-henadz",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/trafficManagerProfiles",
+            "apiVersion": "2026-09-01",
+            "name": "[parameters('trafficManagerProfiles_eshop_tm_henadz_name')]",
+            "location": "global",
+            "properties": {
+                "profileStatus": "Disabled",
+                "trafficRoutingMethod": "Priority",
+                "dnsConfig": {
+                    "relativeName": "[parameters('trafficManagerProfiles_eshop_tm_henadz_name')]",
+                    "ttl": 60
+                },
+                "monitorConfig": {
+                    "profileMonitorStatus": "Disabled",
+                    "protocol": "HTTPS",
+                    "port": 443,
+                    "path": "/Identity/Account/Login",
+                    "intervalInSeconds": 30,
+                    "toleratedNumberOfFailures": 3,
+                    "timeoutInSeconds": 10
+                },
+                "endpoints": [
+                    {
+                        "id": "[concat(resourceId('Microsoft.Network/trafficManagerProfiles', parameters('trafficManagerProfiles_eshop_tm_henadz_name')), '/azureEndpoints/endpoint-eshop-web-henadz-west3')]",
+                        "name": "endpoint-eshop-web-henadz-west3",
+                        "type": "Microsoft.Network/trafficManagerProfiles/azureEndpoints",
+                        "properties": {
+                            "endpointStatus": "Enabled",
+                            "endpointMonitorStatus": "Inactive",
+                            "targetResourceId": "[parameters('sites_eshop_web_henadz_externalid')]",
+                            "target": "eshop-web-henadz-abfcf4dqbtawccc0.westus3-01.azurewebsites.net",
+                            "weight": 1,
+                            "priority": 1,
+                            "endpointLocation": "West US 3",
+                            "alwaysServe": "Disabled"
+                        }
+                    },
+                    {
+                        "id": "[concat(resourceId('Microsoft.Network/trafficManagerProfiles', parameters('trafficManagerProfiles_eshop_tm_henadz_name')), '/externalEndpoints/ep-ext-eshop-web-us-henadz')]",
+                        "name": "ep-ext-eshop-web-us-henadz",
+                        "type": "Microsoft.Network/trafficManagerProfiles/externalEndpoints",
+                        "properties": {
+                            "endpointStatus": "Enabled",
+                            "endpointMonitorStatus": "Inactive",
+                            "target": "eshop-web-us-henadz-c5evabc9avhwfre8.westus3-01.azurewebsites.net",
+                            "weight": 1,
+                            "priority": 2,
+                            "endpointLocation": "Australia Central",
+                            "alwaysServe": "Disabled"
+                        }
+                    }
+                ],
+                "trafficViewEnrollmentStatus": "Disabled",
+                "maxReturn": 0
+            }
+        }
+    ]
+}
