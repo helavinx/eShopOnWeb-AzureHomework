@@ -13,6 +13,9 @@ eshop-api-henadz
 Function App:
 orderitemsreserver-ha
 
+Storage Account:
+steshophomework
+
 SQL Server:
 eshop-sql-henadz
 
@@ -22,8 +25,8 @@ eshopdb
 Cosmos DB:
 eshop-cosmos-ha
 
-Storage Account:
-steshophomework
-
 Traffic Manager:
 eshop-tm-henadz
+
+Application Insights:
+eshop-api-henadz eshop-web-henadz orderitemsreserver-ha
