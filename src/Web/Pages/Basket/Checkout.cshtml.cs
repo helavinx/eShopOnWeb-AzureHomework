@@ -95,12 +95,28 @@ public class CheckoutModel : PageModel
             ServiceBusSender sender =
                 client.CreateSender("orders-queue");
 
-            _logger.LogInformation("Sending order {OrderId} to Service Bus", BasketModel.Id);
-
-            await sender.SendMessageAsync(
-                new ServiceBusMessage(json));
-
-            _logger.LogInformation("Order {OrderId} sent to Service Bus", BasketModel.Id);
+            try
+            {
+                _logger.LogInformation(
+                    "Sending order {OrderId} to Service Bus",
+                    BasketModel.Id);
+            
+                await sender.SendMessageAsync(
+                    new ServiceBusMessage(json));
+            
+                _logger.LogInformation(
+                    "Order {OrderId} sent to Service Bus",
+                    BasketModel.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to send order {OrderId} to Service Bus",
+                    BasketModel.Id);
+            
+                throw;
+            }
     
             await _basketService.DeleteBasketAsync(BasketModel.Id);
         }
