@@ -95,9 +95,13 @@ public class CheckoutModel : PageModel
             ServiceBusSender sender =
                 client.CreateSender("orders-queue");
 
+            _logger.LogInformation("Sending order {OrderId} to Service Bus", BasketModel.Id);
+
             await sender.SendMessageAsync(
                 new ServiceBusMessage(json));
 
+            _logger.LogInformation("Order {OrderId} sent to Service Bus", BasketModel.Id);
+    
             await _basketService.DeleteBasketAsync(BasketModel.Id);
         }
         catch (EmptyBasketOnCheckoutException emptyBasketOnCheckoutException)
