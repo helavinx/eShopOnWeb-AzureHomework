@@ -65,9 +65,9 @@ public class CheckoutModel : PageModel
             var payload = new
             {
                 orderId = BasketModel.Id,
-            
+
                 finalPrice = BasketModel.Items.Sum(i => i.UnitPrice * i.Quantity),
-            
+
                 shippingAddress = new
                 {
                     street = "123 Main St.",
@@ -76,7 +76,7 @@ public class CheckoutModel : PageModel
                     country = "United States",
                     zipCode = "44240"
                 },
-            
+
                 items = BasketModel.Items.Select(i => new
                 {
                     itemId = i.Id,
@@ -95,29 +95,13 @@ public class CheckoutModel : PageModel
             ServiceBusSender sender =
                 client.CreateSender("orders-queue");
 
-            try
-            {
-                _logger.LogInformation(
-                    "Sending order {OrderId} to Service Bus",
-                    BasketModel.Id);
-            
-                await sender.SendMessageAsync(
-                    new ServiceBusMessage(json));
-            
-                _logger.LogInformation(
-                    "Order {OrderId} sent to Service Bus",
-                    BasketModel.Id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to send order {OrderId} to Service Bus",
-                    BasketModel.Id);
-            
-                throw;
-            }
-    
+            _logger.LogInformation("Sending order {OrderId} to Service Bus", BasketModel.Id);
+
+            await sender.SendMessageAsync(
+                new ServiceBusMessage(json));
+
+            _logger.LogInformation("Order {OrderId} sent to Service Bus", BasketModel.Id);
+
             await _basketService.DeleteBasketAsync(BasketModel.Id);
         }
         catch (EmptyBasketOnCheckoutException emptyBasketOnCheckoutException)
