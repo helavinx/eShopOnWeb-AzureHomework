@@ -65,6 +65,18 @@ public class CheckoutModel : PageModel
             var payload = new
             {
                 orderId = BasketModel.Id,
+            
+                finalPrice = BasketModel.Items.Sum(i => i.UnitPrice * i.Quantity),
+            
+                shippingAddress = new
+                {
+                    street = "123 Main St.",
+                    city = "Kent",
+                    state = "OH",
+                    country = "United States",
+                    zipCode = "44240"
+                },
+            
                 items = BasketModel.Items.Select(i => new
                 {
                     itemId = i.Id,
