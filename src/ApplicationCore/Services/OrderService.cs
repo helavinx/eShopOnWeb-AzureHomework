@@ -1,8 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
-using Azure.Messaging.ServiceBus;
-using Microsoft.Extensions.Configuration;
 using Mediator;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
@@ -24,7 +22,7 @@ public class OrderService : IOrderService
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IMediator _mediator;
 
-    private readonly IConfiguration _configuration;
+    private readonly HttpClient _httpClient;
 
     public OrderService(
         IRepository<Basket> basketRepository,
@@ -32,14 +30,14 @@ public class OrderService : IOrderService
         IRepository<Order> orderRepository,
         IUriComposer uriComposer, 
         IMediator mediator,
-        IConfiguration configuration)
+        HttpClient httpClient)
     {
         _orderRepository = orderRepository;
         _uriComposer = uriComposer;
         _basketRepository = basketRepository;
         _itemRepository = itemRepository;
         _mediator = mediator;
-        _configuration = configuration;
+        _httpClient = httpClient;
     }
 
     public async Task CreateOrderAsync(int basketId, Address shippingAddress)
@@ -89,19 +87,15 @@ public class OrderService : IOrderService
 
         var json = JsonSerializer.Serialize(payload);
 
-        string serviceBusConnection = _configuration["ServiceBusConnection"]!;
+        var response = await _httpClient.PostAsync(
+            "https://orderitemsreserver-ha-hgccfyg0a5dpb3gn.westus3-01.azurewebsites.net/api/OrderItemsReserver?code=7ucgCTV9mQLPfU6_AYPdfJdfQgLevy7BEelk9Q3AdkmdAzFuMYSZtw==",
+            new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json"));
 
-        await using var client =
-            new ServiceBusClient(serviceBusConnection);
-
-        ServiceBusSender sender =
-            client.CreateSender("orders-queue");
-
-        var message =
-            new ServiceBusMessage(json);
-
-        await sender.SendMessageAsync(message);
-
+        response.EnsureSuccessStatusCode();
+        
         OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(order);
         await _mediator.Publish(orderCreatedEvent);
     }
